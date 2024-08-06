@@ -20,11 +20,47 @@ const db = mysql.createConnection({
 
 //test connection
 db.connect((err) => {
-    //if connection does not work
-    if(err) return console.log("error connecting to MYSQL")
+    if(err) {
+        console.error("Error connecting to MySQL:", err);
+        return;
+    }
+    console.log("Connected to MySQL as id:", db.threadId);
 
-    //Connection work
-    console.log("connection to MYSQL as id: ", db.threadId);
+//create a db
+db.query(`CREATE DATABASE IF NOT EXISTS expense_tracker1`, (err, result) => {
+    //error creating db
+    if(err) return console.log("error creating database", err)
+
+    //if no error creating db
+    console.log("db expense_trcaker created/checked successifully");
+
+    //select the db expense_tracker
+    db.changeUser({database: 'expense_tracker1' }, (err, result) => {
+        //if err changing db
+        if(err) return console.log("error changing db", err)
+
+        //if no error changing
+        console.log("expense_tracker is in use");
+
+        //create table
+        const createUsersTable = `
+        CREATE TABLE IF NOT EXIST users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            email VARCHAR(100) NOT NULL UNIQUE,
+            username VARCAR(50) NOT NULL,
+            password VARCHAR(255) NOT NULL
+            )`;
+
+        //querry table
+        db.query(createUsersTable, (err, result) => {
+            //if erro creating table
+            if(err) return console.log("error creating table")
+            
+                //if no error creating table
+                console.log("users table is created/checked successfully")
+        })
+    })
+})
 })
 
 
